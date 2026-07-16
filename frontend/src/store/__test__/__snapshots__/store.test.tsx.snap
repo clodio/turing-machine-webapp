@@ -1,0 +1,137 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`store should match initial state 1`] = `
+Object {
+  "alert": Object {
+    "level": "info",
+    "message": "",
+    "open": false,
+  },
+  "comments": Array [],
+  "digitCode": Array [],
+  "registration": Object {
+    "hash": "",
+    "name": "",
+    "status": "new",
+  },
+  "rounds": Array [
+    Object {
+      "code": Array [
+        Object {
+          "digit": null,
+          "shape": "triangle",
+        },
+        Object {
+          "digit": null,
+          "shape": "square",
+        },
+        Object {
+          "digit": null,
+          "shape": "circle",
+        },
+      ],
+      "isPristine": false,
+      "queries": Array [
+        Object {
+          "state": "unknown",
+          "verifier": "A",
+        },
+        Object {
+          "state": "unknown",
+          "verifier": "B",
+        },
+        Object {
+          "state": "unknown",
+          "verifier": "C",
+        },
+        Object {
+          "state": "unknown",
+          "verifier": "D",
+        },
+        Object {
+          "state": "unknown",
+          "verifier": "E",
+        },
+        Object {
+          "state": "unknown",
+          "verifier": "F",
+        },
+      ],
+    },
+  ],
+  "saves": Array [],
+  "settings": Object {
+    "language": "EN",
+    "paletteMode": "light",
+    "storeVersion": 1695655881142,
+  },
+}
+`;
+
+exports[`store should toggle palette mode 1`] = `
+Object {
+  "alert": Object {
+    "level": "info",
+    "message": "",
+    "open": false,
+  },
+  "comments": Array [],
+  "digitCode": Array [],
+  "registration": Object {
+    "hash": "",
+    "name": "",
+    "status": "new",
+  },
+  "rounds": Array [
+    Object {
+      "code": Array [
+        Object {
+          "digit": null,
+          "shape": "triangle",
+        },
+        Object {
+          "digit": null,
+          "shape": "square",
+        },
+        Object {
+          "digit": null,
+          "shape": "circle",
+        },
+      ],
+      "isPristine": false,
+      "queries": Array [
+        Object {
+          "state": "unknown",
+          "verifier": "A",
+        },
+        Object {
+          "state": "unknown",
+          "verifier": "B",
+        },
+        Object {
+          "state": "unknown",
+          "verifier": "C",
+        },
+        Object {
+          "state": "unknown",
+          "verifier": "D",
+        },
+        Object {
+          "state": "unknown",
+          "verifier": "E",
+        },
+        Object {
+          "state": "unknown",
+          "verifier": "F",
+        },
+      ],
+    },
+  ],
+  "saves": Array [],
+  "settings": Object {
+    "language": "EN",
+    "paletteMode": "dark",
+    "storeVersion": 1695655881142,
+  },
+}
+`;
