@@ -1,0 +1,206 @@
+import LoadIcon from "@mui/icons-material/HourglassTopRounded";
+import HashIcon from "@mui/icons-material/NumbersRounded";
+import OkIcon from "@mui/icons-material/ThumbUpAltRounded";
+import SearchIcon from "@mui/icons-material/TravelExploreRounded";
+import ShareIcon from "@mui/icons-material/ShareRounded";
+import Alert from "@mui/material/Alert";
+import Box from "@mui/material/Box";
+import Button from "@mui/material/Button";
+import Collapse from "@mui/material/Collapse";
+import IconButton from "@mui/material/IconButton";
+import Snackbar from "@mui/material/Snackbar";
+import Tooltip from "@mui/material/Tooltip";
+import { alpha, useTheme } from "@mui/material/styles";
+import TextField from "components/TextField";
+import { useAppDispatch } from "hooks/useAppDispatch";
+import { useAppSelector } from "hooks/useAppSelector";
+import { FC, useState } from "react";
+import { commentsActions } from "store/slices/commentsSlice";
+import { digitCodeActions } from "store/slices/digitCodeSlice";
+import { registrationActions } from "store/slices/registrationSlice";
+import { roundsActions } from "store/slices/roundsSlice";
+import { manualCodeListActions } from "store/slices/manualCodeListSlice";
+
+const HashCodeRegistration: FC = () => {
+  const dispatch = useAppDispatch();
+  const registration = useAppSelector((state) => state.registration);
+  const [showNotFound, setShowNotFound] = useState(false);
+  const [showCopied, setShowCopied] = useState(false);
+  const theme = useTheme();
+
+  const onSubmit = () => {
+    dispatch(registrationActions.fetch());
+
+    fetch(`${process.env.REACT_APP_API_END_POINT}?h=${registration.hash}`)
+      .then((response) => response.json())
+      .then((data: any) => {
+        dispatch(roundsActions.reset());
+        dispatch(commentsActions.reset());
+        dispatch(digitCodeActions.reset());
+
+        switch (data.status) {
+          case "ok":
+            const {
+              fake,
+              ind,
+              crypt,
+              color,
+              m,
+            }: {
+              ind: number[];
+              fake?: number[];
+              crypt: number[];
+              color: number;
+              m: number;
+            } = data;
+            dispatch(registrationActions.fetchDone());
+            dispatch(manualCodeListActions.reset());
+            dispatch(commentsActions.setCards({ ind, fake, crypt, color, m }));
+            break;
+          default:
+            setShowNotFound(true);
+            dispatch(registrationActions.fetchBad());
+            break;
+        }
+      })
+      .catch(() => {
+        setShowNotFound(true);
+        dispatch(registrationActions.fetchBad());
+      });
+  };
+
+  const onShare = () => {
+    const baseUrl = "https://clood.github.io/turing-machine-board-game/";
+    const url = `${baseUrl}?party_info=${encodeURIComponent(registration.hash)}`;
+    navigator.clipboard.writeText(url).then(() => {
+      setShowCopied(true);
+    });
+  };
+
+  return (
+    <>
+      <Snackbar
+        anchorOrigin={{ horizontal: "center", vertical: "bottom" }}
+        open={showNotFound}
+        onClose={() => {
+          setShowNotFound(false);
+        }}
+      >
+        <Alert
+          onClose={() => {
+            setShowNotFound(false);
+          }}
+          severity="error"
+          sx={{ width: "100%" }}
+          variant="filled"
+        >
+          {registration.hash} Game ID not found!
+        </Alert>
+      </Snackbar>
+
+      {/* Share toast */}
+      <Snackbar
+        anchorOrigin={{ horizontal: "center", vertical: "top" }}
+        open={showCopied}
+        autoHideDuration={3000}
+        onClose={() => setShowCopied(false)}
+      >
+        <Alert
+          onClose={() => setShowCopied(false)}
+          severity="success"
+          sx={{ width: "100%" }}
+          variant="filled"
+        >
+          Lien copié !
+        </Alert>
+      </Snackbar>
+
+      {registration.status === "new" && (
+        <Box pt={0.5} pb={0.5}>
+          <Alert severity="warning">
+            Starting a game by hashcode might be broken at the moment. If you
+            encounter an error, please use the manual method.
+          </Alert>
+        </Box>
+      )}
+      <form
+        onSubmit={(e) => {
+          e.preventDefault();
+          onSubmit();
+        }}
+      >
+        <TextField
+          prefixId="registration__hash"
+          disabled={registration.status !== "new"}
+          iconRender={<HashIcon />}
+          value={registration.hash}
+          maxChars={10}
+          onChange={(value) =>
+            dispatch(registrationActions.updateHash(value.toUpperCase()))
+          }
+          withReset={registration.status === "new"}
+          onReset={() => dispatch(registrationActions.updateHash(""))}
+          customRadius={
+            registration.status === "ready"
+              ? theme.spacing(0, 0, 2, 2)
+              : undefined
+          }
+        />
+        <Box pt={0.5}>
+          <Collapse in={registration.status !== "ready"}>
+            <Button
+              aria-label="search"
+              disabled={!registration.hash || registration.status !== "new"}
+              fullWidth
+              size="large"
+              type="submit"
+              sx={(theme) => ({
+                background: alpha(theme.palette.primary.main, 0.1),
+                borderRadius: theme.spacing(0, 0, 2, 2),
+                fontFamily: "Kalam",
+                fontSize: 24,
+                height: theme.spacing(6),
+                "&:hover": {
+                  background: alpha(theme.palette.primary.main, 0.2),
+                },
+              })}
+            >
+              {registration.status === "ready" ? (
+                <OkIcon />
+              ) : registration.status === "fetch" ? (
+                <LoadIcon
+                  sx={{
+                    "@keyframes rotation": {
+                      from: {
+                        transform: "rotate(0deg)",
+                      },
+                      to: {
+                        transform: "rotate(359deg)",
+                      },
+                    },
+                    animation: "rotation 2s infinite linear",
+                  }}
+                />
+              ) : (
+                <SearchIcon />
+              )}
+            </Button>
+          </Collapse>
+        </Box>
+      </form>
+
+      {/* Share button — only when game is ready */}
+      {registration.status === "ready" && (
+        <Box display="flex" justifyContent="flex-end" pt={0.5}>
+          <Tooltip title="Copier le lien de partage">
+            <IconButton onClick={onShare} aria-label="share game link">
+              <ShareIcon />
+            </IconButton>
+          </Tooltip>
+        </Box>
+      )}
+    </>
+  );
+};
+
+export default HashCodeRegistration;
