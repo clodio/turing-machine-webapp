@@ -1,11 +1,8 @@
 import ContentIcon from "@mui/icons-material/ContentPasteRounded";
-import SearchIcon from "@mui/icons-material/ContentPasteSearchRounded";
 import DarkModeIcon from "@mui/icons-material/DarkModeRounded";
 import LightModeIcon from "@mui/icons-material/LightModeRounded";
-import SaveIcon from "@mui/icons-material/SaveRounded";
 import CheckIcon from "@mui/icons-material/RuleFolderRounded";
 import CheckCircleIcon from "@mui/icons-material/CheckCircleRounded";
-import Badge from "@mui/material/Badge";
 import Box from "@mui/material/Box";
 import Button from "@mui/material/Button";
 import Collapse from "@mui/material/Collapse";
@@ -28,7 +25,6 @@ import { useAppSelector } from "hooks/useAppSelector";
 import { usePaletteMode } from "hooks/usePaletteMode";
 import { FC, useState } from "react";
 import { useUpdateEffect } from "react-use";
-import { savesActions } from "store/slices/savesSlice";
 import { roundsActions } from "store/slices/roundsSlice";
 import { gameActions } from "store/slices/gameSlice";
 import Comments from "./Comments";
@@ -41,7 +37,6 @@ import LanguageSelect from "components/LanguageSelect";
 import { NewButton } from "components/NewButton";
 import { settingsActions } from "store/slices/settingsSlice";
 import { alertActions } from "store/slices/alertSlice";
-import { useCanBeSaved } from "hooks/useCanBeSaved";
 import { PossibleCodes } from "components/PossibleCodes";
 import { ManualCodeList } from "../components/ManualCodeList";
 import ShapeIcon from "components/ShapeIcon";
@@ -59,7 +54,6 @@ const Root: FC = () => {
   const language = useAppSelector((state) => state.settings.language);
 
   const [savesDialog, setSavesDialog] = useState(false);
-  const [hasBadge, setHasBadge] = useState(false);
   const [showSolutionConfirm, setShowSolutionConfirm] = useState(false);
   const [showSolutionDialog, setShowSolutionDialog] = useState(false);
   const [solutionCode, setSolutionCode] = useState<string | null>(null);
@@ -171,8 +165,6 @@ const Root: FC = () => {
     setSolutionCode(result.codes[0]);
     setShowSolutionDialog(true);
   };
-
-  const canBeSaved = useCanBeSaved();
 
   return (
     <ThemeProvider theme={theme}>
