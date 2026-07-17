@@ -21,10 +21,19 @@ export const useLongPress = (
   const longPressTriggeredRef = useRef(false);
   const pressStartRef = useRef(0);
   const shouldBlockClickRef = useRef(false);
+  // Tracks whether a touch event was recently handled to suppress
+  // the synthetic mouse events browsers fire after touch sequences.
+  const touchJustHandledRef = useRef(false);
+  const touchClearTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  const isTouchEvent = (e: React.MouseEvent | React.TouchEvent): boolean =>
+    "touches" in e;
 
   const handleStart = useCallback((e: React.MouseEvent | React.TouchEvent) => {
+    // Suppress synthetic mouse events that follow touch events
+    if (!isTouchEvent(e) && touchJustHandledRef.current) return;
     // Don't trigger if it's not left mouse button
-    if (e instanceof MouseEvent && e.button !== 0) return;
+    if (!isTouchEvent(e) && (e as React.MouseEvent).button !== 0) return;
     
     console.log("[LongPress] Press started");
     longPressTriggeredRef.current = false;
@@ -42,6 +51,9 @@ export const useLongPress = (
   }, [onLongPress]);
 
   const handleEnd = useCallback((e: React.MouseEvent | React.TouchEvent) => {
+    // Suppress synthetic mouse events that follow touch events
+    if (!isTouchEvent(e) && touchJustHandledRef.current) return;
+
     if (timerRef.current) {
       clearTimeout(timerRef.current);
     }
@@ -64,6 +76,16 @@ export const useLongPress = (
     } else if (wasLongPress) {
       // Long press was triggered, block any subsequent clicks
       shouldBlockClickRef.current = true;
+    }
+
+    // After a touch event ends, mark a short window during which synthetic
+    // mouse events should be ignored.
+    if (isTouchEvent(e)) {
+      touchJustHandledRef.current = true;
+      if (touchClearTimerRef.current) clearTimeout(touchClearTimerRef.current);
+      touchClearTimerRef.current = setTimeout(() => {
+        touchJustHandledRef.current = false;
+      }, 600);
     }
 
     setIsLongPressed(false);

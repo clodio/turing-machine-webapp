@@ -15,6 +15,7 @@ import { registrationActions } from "store/slices/registrationSlice";
 import { useAppSelector } from "hooks/useAppSelector";
 import { useState } from "react";
 import { manualCodeListActions } from "store/slices/manualCodeListSlice";
+import { roundsActions } from "store/slices/roundsSlice";
 
 export function NewButton() {
   const { theme } = usePaletteMode();
@@ -34,7 +35,8 @@ export function NewButton() {
 
   const handleConfirm = () => {
     dispatch(registrationActions.reset());
-    dispatch(manualCodeListActions.reset())
+    dispatch(manualCodeListActions.reset());
+    dispatch(roundsActions.reset());
     setDialogOpen(false);
   };
 

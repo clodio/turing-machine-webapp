@@ -352,7 +352,10 @@ const Root: FC = () => {
             prefixId="settings__game-mode"
             timerSeconds={state.game.timerSeconds}
             isTimerRunning={state.game.isTimerRunning}
-            onChange={(value) => dispatch(gameActions.setGameMode(value))}
+            onChange={(value) => {
+              dispatch(gameActions.setGameMode(value));
+              dispatch(roundsActions.reset());
+            }}
           />
           <Divider
             orientation="vertical"
@@ -381,23 +384,23 @@ const Root: FC = () => {
             <Grid item lg={6} md={6} xs={12}>
               {isUpLg ? (
                 <>
-                  <ManualCodeList />
+                  {state.game.mode !== "multiplayer" && <ManualCodeList />}
                   <Comments />
                 </>
               ) : (
-                <DigitCode />
+                state.game.mode !== "multiplayer" ? <DigitCode /> : null
               )}
             </Grid>
             <Grid item lg={3} xs={12}>
               {isUpLg ? (
-                <DigitCode />
+                state.game.mode !== "multiplayer" ? <DigitCode /> : null
               ) : (
                 <>
-                  <ManualCodeList />
+                  {state.game.mode !== "multiplayer" && <ManualCodeList />}
                   <Comments />
                 </>
               )}
-              <PossibleCodes />
+              {state.game.mode !== "multiplayer" && <PossibleCodes />}
             </Grid>
           </Grid>
         </Collapse>

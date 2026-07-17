@@ -11,6 +11,7 @@ import { roundsActions } from "store/slices/roundsSlice";
 const Rounds: FC = () => {
   const dispatch = useAppDispatch();
   const rounds = useAppSelector((state) => state.rounds);
+  const isMultiplayer = useAppSelector((state) => state.game.mode === "multiplayer");
 
   return (
     <Paper
@@ -20,22 +21,30 @@ const Rounds: FC = () => {
     >
       <Box p={2} pb={0}>
         {rounds.map((round, index) => (
-          <Round key={index} round={round} index={index} />
+          <Round
+            key={index}
+            round={round}
+            index={index}
+            isCurrentRound={index === rounds.length - 1}
+            isMultiplayer={isMultiplayer}
+          />
         ))}
       </Box>
-      <Box p={2} pt={0}>
-        <Button
-          id="rounds__add-round-button"
-          aria-label="add"
-          fullWidth
-          size="large"
-          onClick={() => {
-            dispatch(roundsActions.addRound());
-          }}
-        >
-          <AddIcon />
-        </Button>
-      </Box>
+      {!isMultiplayer && (
+        <Box p={2} pt={0}>
+          <Button
+            id="rounds__add-round-button"
+            aria-label="add"
+            fullWidth
+            size="large"
+            onClick={() => {
+              dispatch(roundsActions.addRound());
+            }}
+          >
+            <AddIcon />
+          </Button>
+        </Box>
+      )}
     </Paper>
   );
 };
